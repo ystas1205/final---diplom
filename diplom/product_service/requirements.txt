@@ -1,0 +1,15 @@
+djangorestframework~=3.14.0
+celery~=5.3.0
+requests~=2.31.0
+ujson~=5.9.0
+pyyaml~=6.0.0
+django_celery_results
+python-dotenv
+gunicorn
+flower
+psycopg2-binary
+Django==5.0.2
+django-debug-toolbar==4.3.0
+django-import-export==3.3.7
+django-redis==5.4.0
+django-rest-passwordreset==1.4.0
