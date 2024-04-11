@@ -25,7 +25,6 @@ from yaml import load as load_yaml, Loader
 from backend.signals import new_user_registered, new_order
 from backend.tasks import task_product_export, task_product_import
 
-
 class RegisterAccount(APIView):
     """
     Для регистрации покупателей

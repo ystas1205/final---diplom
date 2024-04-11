@@ -1,23 +1,26 @@
+
+# образ на основе которого создаём контейнер
 FROM python:latest
+# рабочая директория внутри проекта
 WORKDIR /app
-
+# копируем содержимое текущей папки в контейнер
 COPY . /app
+# копируем и устанавливаем зависимости
 COPY ./requirements.txt .
-#RUN apt-get update && apt-get install -y curl && apt-get clean
 RUN pip install -r requirements.txt
-
+# переменные окружения для python
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
-
-#ENTRYPOINT ["/app/entrypoint.sh"]
+# выполняем миграции
 CMD python manage.py migrate \
+     # Обновляем
      && pip install --upgrade pip \
+     # Подтягиваем статичесике файлы
      && python manage.py collectstatic --no-input \
+     # Запускаем gunicorn
      && gunicorn product_service.wsgi:application --bind 0.0.0.0:8000
 
 
 
 
-#    && python manage.py collectstatic --no-input \
 
-#    && gunicorn prediction.wsgi:application --bind 0.0.0.0:8000 --log-level info
