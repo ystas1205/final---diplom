@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+
 from tests.settings import BASE_DIR
 
 from product_service.celery import app
@@ -49,11 +50,13 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework.authtoken',
+    'drf_spectacular',
     'django_rest_passwordreset',
     'debug_toolbar',
     'backend',
     'django_celery_results',
     'import_export'
+
 ]
 
 MIDDLEWARE = [
@@ -161,6 +164,8 @@ SERVER_EMAIL = EMAIL_HOST_USER
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
+
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 40,
 
@@ -175,11 +180,11 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     ),
 
-}
+ }
 
-# CELERY_BROKER_URL ='redis://redis:6379/0'
+# CELERY_BROKER_URL ='redis://127.0.0.1:6379/0'
 #
-# CELERY_RESULT_BACKEND = 'redis://redis:6379/1'
+# CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379/1'
 
 CELERY_BROKER_URL: os.getenv('CELERY_BROKER_URL')
 
@@ -193,6 +198,12 @@ CACHES = {
         'LOCATION': 'redis://localhost:6379/1',
     }
 }
-
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Сервис заказа розничных сетей API',
+    'DESCRIPTION': 'Your project description',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    # OTHER SETTINGS
+}
 
 # CELERY_TASK_ALWAYS_EAGER  = True

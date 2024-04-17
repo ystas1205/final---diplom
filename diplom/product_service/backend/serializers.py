@@ -1,4 +1,5 @@
-from rest_framework import serializers
+from drf_spectacular.utils import OpenApiParameter, extend_schema
+from rest_framework import serializers, status
 
 from backend.models import User, Category, Shop, ProductInfo, Product, ProductParameter, OrderItem, Order, Contact
 
@@ -13,6 +14,9 @@ class ContactSerializer(serializers.ModelSerializer):
         }
 
 
+
+
+
 class UserSerializer(serializers.ModelSerializer):
     contacts = ContactSerializer(read_only=True, many=True)
 
@@ -20,6 +24,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ('id', 'first_name', 'last_name', 'email', 'company', 'position', 'contacts')
         read_only_fields = ('id',)
+
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -87,3 +92,12 @@ class OrderSerializer(serializers.ModelSerializer):
         model = Order
         fields = ('id', 'ordered_items', 'state', 'dt', 'total_sum', 'contact',)
         read_only_fields = ('id',)
+
+
+class DummyDetailSerializer(serializers.Serializer):
+    status = serializers.IntegerField()
+
+
+class DummyDetailAndStatusSerializer(serializers.Serializer):
+    status = serializers.IntegerField()
+    details = serializers.CharField()

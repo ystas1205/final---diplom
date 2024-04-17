@@ -1,4 +1,8 @@
 from django.contrib.auth import get_user_model
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema, OpenApiParameter, \
+    OpenApiExample, extend_schema_view, OpenApiResponse
+
 from rest_framework import status
 from backend.serializers import UserSerializer, ContactSerializer, Shop, \
     ProductInfoSerializer, OrderItemSerializer, ShopSerializer, \
@@ -6,6 +10,7 @@ from backend.serializers import UserSerializer, ContactSerializer, Shop, \
 from backend.models import Contact, Shop, ConfirmEmailToken, ProductInfo, \
     Category, Product, Parameter, ProductParameter, Order, User, OrderItem
 from distutils.util import strtobool
+
 from rest_framework.request import Request
 from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
@@ -25,13 +30,33 @@ from yaml import load as load_yaml, Loader
 from backend.signals import new_user_registered, new_order
 from backend.tasks import task_product_export, task_product_import
 
+
 class RegisterAccount(APIView):
     """
-    Для регистрации покупателей
+    Класс для регистрации покупателей
     """
 
     # Регистрация методом POST
-
+    @extend_schema(
+        summary="Регестрация пользователей",
+        request=UserSerializer,
+        examples=[
+            OpenApiExample(
+                "Post example",
+                description="Test example for the post",
+                value=
+                {
+                    "password": "",
+                    "email": "ystas2019@mail.ru",
+                    "company": "adidadas",
+                    "position": "3231113",
+                    "first_name": "Станислав",
+                    "last_name": "Юдин"
+                },
+                status_codes=[str(status.HTTP_200_OK)],
+            ),
+        ],
+    )
     def post(self, request, *args, **kwargs):
         # проверяем обязательные аргументы
         # получаем почту с токеном
@@ -72,7 +97,22 @@ class ConfirmAccount(APIView):
     Класс для подтверждения почтового адреса
     """
 
-    # Регистрация методом POST
+    @extend_schema(
+        summary="Подтверждения почтового адреса",
+        request=UserSerializer,
+        examples=[
+            OpenApiExample(
+                "Post example",
+                description="Test example for the post",
+                value=
+                {
+                    "email": "ystas2019@mail.ru",
+                    "token": "00cdc7540e547f0dc7a03889815337bc27fa4dd",
+                },
+                status_codes=[str(status.HTTP_200_OK)],
+            ),
+        ],
+    )
     def post(self, request, *args, **kwargs):
         # проверяем обязательные аргументы
         if {'email', 'token'}.issubset(request.data):
@@ -100,6 +140,22 @@ class LoginAccount(APIView):
     """
 
     # Авторизация методом POST
+    @extend_schema(
+        summary="Авторизация пользователей",
+        request=UserSerializer,
+        examples=[
+            OpenApiExample(
+                "Post example",
+                description="Test example for the post",
+                value=
+                {
+                    "email": "ystas2019@mail.ru",
+                    "password": "8490866stas",
+                },
+                status_codes=[str(status.HTTP_200_OK)],
+            ),
+        ],
+    )
     def post(self, request, *args, **kwargs):
         if {'email', 'password'}.issubset(request.data):
             user = authenticate(request, username=request.data['email'],
@@ -120,10 +176,12 @@ class LoginAccount(APIView):
 
 class ContactView(APIView):
     """
-    Класс для получения удаление добавление и зменение контактных данных
+    Класс для получения удаление добавление и замены контактных данных
     """
 
+    @extend_schema(summary="Получение контакта")
     def get(self, request, *args, **kwargs):
+
         if not request.user.is_authenticated:
             return Response({'message': 'Требуется войти'},
                             status=status.HTTP_403_FORBIDDEN)
@@ -131,10 +189,32 @@ class ContactView(APIView):
         serializer = ContactSerializer(contact, many=True)
         return Response(serializer.data)
 
+    @extend_schema(
+        summary="Создание нового контакта",
+        request=ContactSerializer,
+        examples=[
+            OpenApiExample(
+                "Post example",
+                description="Test example for the post",
+                value=
+                {
+                    "city": "Gorod",
+                    "street": "Shashkin street 40",
+                    "house": "Apartament 28",
+                    "structure": 123,
+                    "building": 123,
+                    "apartment": 123,
+                    "phone": 89222334847,
+
+                },
+                status_codes=[str(status.HTTP_200_OK)],
+            ),
+        ],
+    )
     def post(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return Response({'message': 'Требуется войти'},
-                            status=status.HTTP_403_FORBIDDEN)
+        # if not request.user.is_authenticated:
+        #     return Response({'message': 'Требуется войти'},
+        #                     status=status.HTTP_403_FORBIDDEN)
         if {'city', 'street', 'phone'}.issubset(request.data):
             # request.data._mutable = True
             data = request.data.copy()
@@ -147,6 +227,28 @@ class ContactView(APIView):
         return Response({'Status': 'Не указаны все необходимые аргументы'},
                         status=status.HTTP_400_BAD_REQUEST)
 
+    @extend_schema(
+        summary="Обновление контакта",
+        request=ContactSerializer,
+        examples=[
+            OpenApiExample(
+                "Put example",
+                description="Test example for the put",
+                value=
+                {"id": "2",
+                 "city": "Gorod",
+                 "street": "Shashkin street 40",
+                 "house": "Apartament 28",
+                 "structure": 1,
+                 "building": 1,
+                 "apartment": 123,
+                 "phone": 89222334847,
+
+                 },
+                status_codes=[str(status.HTTP_200_OK)],
+            ),
+        ],
+    )
     def put(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return Response({'message': 'Требуется войти'},
@@ -191,11 +293,14 @@ class ContactView(APIView):
                         status=status.HTTP_400_BAD_REQUEST)
 
 
+# your action behaviour
+
 class ShopView(APIView):
     """
     Класс для получения списка магазинов
     """
 
+    @extend_schema(summary="Получение списка магазинов")
     def get(self, request, *args, **kwargs):
         shop = Shop.objects.filter(state=True)
         serializer = ShopSerializer(shop, many=True)
@@ -207,6 +312,7 @@ class ProductInfoView(APIView):
     Класс для поиска товаров.
     """
 
+    @extend_schema(summary="Поиск товаров")
     def get(self, request: Request, *args, **kwargs):
         query = Q(shop__state=True)
         shop_id = request.query_params.get('shop_id')
@@ -229,8 +335,13 @@ class ProductInfoView(APIView):
 
 
 class BasketView(APIView):
-    # получить корзину
+    """
+        Класс для корзины.
+    """
+
+    @extend_schema(summary="Получить корзину")
     def get(self, request, *args, **kwargs):
+        """ Получить корзину """
         if not request.user.is_authenticated:
             return Response({'message': 'Требуется войти'},
                             status=status.HTTP_403_FORBIDDEN)
@@ -245,7 +356,22 @@ class BasketView(APIView):
         serializer = OrderSerializer(basket, many=True)
         return Response(serializer.data)
 
-    # редактировать корзину
+    @extend_schema(
+        summary="Создание корзины",
+        request=OrderSerializer,
+        examples=[
+            OpenApiExample(
+                "Post example",
+                description="Test example for the post",
+                value={
+                    "items": [{"product_info": 1, "quantity": 13},
+                              {"product_info": 2, "quantity": 12}],
+                },
+                status_codes=[str(status.HTTP_200_OK)],
+            ),
+        ],
+    )
+    # создание корзину
     def post(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return Response({'message': 'Требуется войти'},
@@ -287,6 +413,7 @@ class BasketView(APIView):
                              'Errors': 'Не указаны все необходимые аргументы'})
 
     # удалить товары из корзины
+    @extend_schema(summary="Удалить товары из корзины")
     def delete(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return Response({'message': 'Требуется войти'},
@@ -311,7 +438,21 @@ class BasketView(APIView):
         return JsonResponse({'Status': False,
                              'Errors': 'Не указаны все необходимые аргументы'})
 
-    # добавить позиции в корзину
+    @extend_schema(
+        summary="Добавить позиции в корзину",
+        request=OrderSerializer,
+        examples=[
+            OpenApiExample(
+                "Put example",
+                description="Test example for the put",
+                value={
+                    "items": [{"product_info": 9, "quantity": 13},
+                              {"product_info": 10, "quantity": 12}],
+                },
+                status_codes=[str(status.HTTP_200_OK)],
+            ),
+        ],
+    )
     def put(self, request, *args, **kwargs):
         """
                Update the items in the user's basket.
@@ -352,27 +493,14 @@ class BasketView(APIView):
 
 class AccountDetails(APIView):
     """
-    A class for managing user account details.
+    Класс для управления данными учетной записи пользователя.
 
-    Methods:
-    - get: Retrieve the details of the authenticated user.
-    - post: Update the account details of the authenticated user.
-
-    Attributes:
-    - None
     """
 
     # получить данные
+    @extend_schema(
+        summary="Получить данные аутентифицированного пользователя.")
     def get(self, request: Request, *args, **kwargs):
-        """
-               Retrieve the details of the authenticated user.
-
-               Args:
-               - request (Request): The Django request object.
-
-               Returns:
-               - Response: The response containing the details of the authenticated user.
-        """
         if not request.user.is_authenticated:
             return Response({'message': 'Требуется войти'},
                             status=status.HTTP_403_FORBIDDEN)
@@ -381,16 +509,28 @@ class AccountDetails(APIView):
         return Response(serializer.data)
 
     # Редактирование методом POST
+
+    @extend_schema(
+        summary="Обновить данные учетной записи аутентифицированного пользователя.",
+        request=UserSerializer,
+        examples=[
+            OpenApiExample(
+                "Put example",
+                description="Test example for the put",
+                value=
+                {
+                    "password": "8490866stas",
+                    "email": "ystas2019@mail.ru",
+                    "company": "adidadas",
+                    "position": "3231113777",
+                    "first_name": "Станислав",
+                    "last_name": "Юдин"
+                },
+                status_codes=[str(status.HTTP_200_OK)],
+            ),
+        ],
+    )
     def post(self, request, *args, **kwargs):
-        """
-                Update the account details of the authenticated user.
-
-                Args:
-                - request (Request): The Django request object.
-
-                Returns:
-                - JsonResponse: The response indicating the status of the operation and any errors.
-                """
         if not request.user.is_authenticated:
             return Response({'message': 'Требуется войти'},
                             status=status.HTTP_403_FORBIDDEN)
@@ -410,7 +550,6 @@ class AccountDetails(APIView):
                     {'Status': False, 'Errors': {'password': error_array}})
             else:
                 request.user.set_password(request.data['password'])
-                a = request.user
 
         # проверяем остальные данные
         user_serializer = UserSerializer(request.user, data=request.data,
@@ -426,17 +565,15 @@ class AccountDetails(APIView):
 class OrderView(APIView):
     """
     Класс для получения и размешения заказов пользователями
-    Methods:
-    - get: Retrieve the details of a specific order.
-    - post: Create a new order.
-    - put: Update the details of a specific order.
-    - delete: Delete a specific order.
-
-    Attributes:
-    - None
+   Методы:
+     - get: получить сведения о конкретном заказе.
+     - сообщение: Создать новый заказ.
+     - put: Обновить детали конкретного заказа.
+     - удалить: удалить конкретный заказ.
     """
 
     # получить мои заказы
+    @extend_schema(summary="Получение заказов")
     def get(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return Response({'message': 'Требуется войти'},
@@ -453,6 +590,22 @@ class OrderView(APIView):
         return Response(serializer.data)
 
     # разместить заказ из корзины
+    @extend_schema(
+        summary="Разместить заказ из корзины",
+        request=OrderSerializer,
+        examples=[
+            OpenApiExample(
+                "Post example",
+                description="Test example for the post",
+                value=
+                {
+                    "id": "1",
+                    "contact": "1",
+                },
+                status_codes=[str(status.HTTP_200_OK)],
+            ),
+        ],
+    )
     def post(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return Response({'message': 'Требуется войти'},
@@ -479,6 +632,7 @@ class OrderView(APIView):
                              'Errors': 'Не указаны все необходимые аргументы'})
 
 
+@extend_schema(summary="Просмотр категорий")
 class CategoryView(ListAPIView):
     """
     Класс для просмотра категорий
@@ -487,12 +641,12 @@ class CategoryView(ListAPIView):
     serializer_class = CategorySerializer
 
 
-class ShopView(ListAPIView):
-    """
-    Класс для просмотра списка магазинов
-    """
-    queryset = Shop.objects.filter(state=True)
-    serializer_class = ShopSerializer
+# class ShopView(ListAPIView):
+#     """
+#     Класс для просмотра списка магазинов
+#     """
+#     queryset = Shop.objects.filter(state=True)
+#     serializer_class = ShopSerializer
 
 
 class PartnerUpdate(APIView):
@@ -500,6 +654,20 @@ class PartnerUpdate(APIView):
     Обновление товаров
     """
 
+    @extend_schema(
+        summary="Обновление товаров",
+        request=ShopSerializer,
+        examples=[
+            OpenApiExample(
+                "Post example",
+                description="Test example for the post",
+                value={
+                    "url": "https://raw.githubusercontent.com/netology-code/pd-diplom/master/data/shop1.yaml",
+                },
+                status_codes=[str(status.HTTP_200_OK)],
+            ),
+        ],
+    )
     def post(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return JsonResponse({'Status': False, 'Error': 'Log in required'},
@@ -539,26 +707,16 @@ class PartnerUpdate(APIView):
 
 class PartnerState(APIView):
     """
-       A class for managing partner state.
+       Класс для управления состоянием партнера.
 
-       Methods:
-       - get: Retrieve the state of the partner.
+        Методы:
+        - get: Получить состояние партнера.
 
-       Attributes:
-       - None
-       """
+    """
 
     # получить текущий статус
+    @extend_schema(summary="Получить текущий статус")
     def get(self, request, *args, **kwargs):
-        """
-               Retrieve the state of the partner.
-
-               Args:
-               - request (Request): The Django request object.
-
-               Returns:
-               - Response: The response containing the state of the partner.
-               """
         if not request.user.is_authenticated:
             return JsonResponse({'Status': False, 'Error': 'Log in required'},
                                 status=403)
@@ -572,16 +730,21 @@ class PartnerState(APIView):
         return Response(serializer.data)
 
     # изменить текущий статус
+    @extend_schema(
+        summary="Изменить текущий статус",
+        request=ShopSerializer,
+        examples=[
+            OpenApiExample(
+                "Post example",
+                description="Test example for the post",
+                value={
+                    "state": "on",
+                },
+                status_codes=[str(status.HTTP_200_OK)],
+            ),
+        ],
+    )
     def post(self, request, *args, **kwargs):
-        """
-               Update the state of a partner.
-
-               Args:
-               - request (Request): The Django request object.
-
-               Returns:
-               - JsonResponse: The response indicating the status of the operation and any errors.
-               """
         if not request.user.is_authenticated:
             return JsonResponse({'Status': False, 'Error': 'Log in required'},
                                 status=403)
@@ -606,7 +769,7 @@ class Partnerexport(APIView):
     """
     Экспорт товаров в файл
     """
-
+    @extend_schema(summary="Экспорт товаров в файл")
     def post(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return Response({'message': 'Требуется войти'},
@@ -619,4 +782,3 @@ class Partnerexport(APIView):
         return Response({'status': 'Экспорт данных прошел успешно'},
 
                         status=status.HTTP_201_CREATED)
-
