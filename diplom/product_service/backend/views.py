@@ -53,7 +53,7 @@ class RegisterAccount(APIView):
                     "first_name": "Станислав",
                     "last_name": "Юдин"
                 },
-                status_codes=[str(status.HTTP_200_OK)],
+                # status_codes=[str(status.HTTP_201_CREATED)],
             ),
         ],
     )
@@ -109,7 +109,7 @@ class ConfirmAccount(APIView):
                     "email": "ystas2019@mail.ru",
                     "token": "00cdc7540e547f0dc7a03889815337bc27fa4dd",
                 },
-                status_codes=[str(status.HTTP_200_OK)],
+                # status_codes=[str(status.HTTP_200_OK)],
             ),
         ],
     )
@@ -124,7 +124,7 @@ class ConfirmAccount(APIView):
                 token.user.is_active = True
                 token.user.save()
                 token.delete()
-                return Response({'status': 'Почтовый адрес подтвержден '},
+                return Response({'status': 'Почтовый адрес подтвержден'},
                                 status=status.HTTP_201_CREATED)
             else:
                 return Response(
@@ -152,7 +152,7 @@ class LoginAccount(APIView):
                     "email": "ystas2019@mail.ru",
                     "password": "8490866stas",
                 },
-                status_codes=[str(status.HTTP_200_OK)],
+                # status_codes=[str(status.HTTP_200_OK)],
             ),
         ],
     )
@@ -207,14 +207,14 @@ class ContactView(APIView):
                     "phone": 89222334847,
 
                 },
-                status_codes=[str(status.HTTP_200_OK)],
+                # status_codes=[str(status.HTTP_200_OK)],
             ),
         ],
     )
     def post(self, request, *args, **kwargs):
-        # if not request.user.is_authenticated:
-        #     return Response({'message': 'Требуется войти'},
-        #                     status=status.HTTP_403_FORBIDDEN)
+        if not request.user.is_authenticated:
+            return Response({'message': 'Требуется войти'},
+                            status=status.HTTP_403_FORBIDDEN)
         if {'city', 'street', 'phone'}.issubset(request.data):
             # request.data._mutable = True
             data = request.data.copy()
@@ -245,7 +245,7 @@ class ContactView(APIView):
                  "phone": 89222334847,
 
                  },
-                status_codes=[str(status.HTTP_200_OK)],
+                # status_codes=[str(status.HTTP_200_OK)],
             ),
         ],
     )
@@ -266,6 +266,20 @@ class ContactView(APIView):
         return Response({'Status': 'Не указаны все необходимые аргументы'},
                         status=status.HTTP_400_BAD_REQUEST)
 
+    @extend_schema(
+        summary="Удаление контакта",
+        request=ContactSerializer,
+        examples=[
+            OpenApiExample(
+                "Put example",
+                description="Test example for the put",
+                value=
+                {"items": 1,
+                 },
+                # status_codes=[str(status.HTTP_200_OK)],
+            ),
+        ],
+    )
     def delete(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return Response({'message': 'Требуется войти'},
@@ -367,7 +381,7 @@ class BasketView(APIView):
                     "items": [{"product_info": 1, "quantity": 13},
                               {"product_info": 2, "quantity": 12}],
                 },
-                status_codes=[str(status.HTTP_200_OK)],
+                # status_codes=[str(status.HTTP_200_OK)],
             ),
         ],
     )
@@ -449,7 +463,7 @@ class BasketView(APIView):
                     "items": [{"product_info": 9, "quantity": 13},
                               {"product_info": 10, "quantity": 12}],
                 },
-                status_codes=[str(status.HTTP_200_OK)],
+                # status_codes=[str(status.HTTP_200_OK)],
             ),
         ],
     )
@@ -526,7 +540,7 @@ class AccountDetails(APIView):
                     "first_name": "Станислав",
                     "last_name": "Юдин"
                 },
-                status_codes=[str(status.HTTP_200_OK)],
+                # status_codes=[str(status.HTTP_200_OK)],
             ),
         ],
     )
@@ -602,7 +616,7 @@ class OrderView(APIView):
                     "id": "1",
                     "contact": "1",
                 },
-                status_codes=[str(status.HTTP_200_OK)],
+                # status_codes=[str(status.HTTP_200_OK)],
             ),
         ],
     )
@@ -664,7 +678,7 @@ class PartnerUpdate(APIView):
                 value={
                     "url": "https://raw.githubusercontent.com/netology-code/pd-diplom/master/data/shop1.yaml",
                 },
-                status_codes=[str(status.HTTP_200_OK)],
+                # status_codes=[str(status.HTTP_200_OK)],
             ),
         ],
     )
@@ -740,7 +754,7 @@ class PartnerState(APIView):
                 value={
                     "state": "on",
                 },
-                status_codes=[str(status.HTTP_200_OK)],
+                # status_codes=[str(status.HTTP_200_OK)],
             ),
         ],
     )

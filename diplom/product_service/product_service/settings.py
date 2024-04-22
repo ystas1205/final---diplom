@@ -174,6 +174,8 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.BrowsableAPIRenderer',
 
     ),
+    'TEST_REQUEST_DEFAULT_FORMAT': 'json',
+
 
     'DEFAULT_AUTHENTICATION_CLASSES': (
 
@@ -206,4 +208,8 @@ SPECTACULAR_SETTINGS = {
     # OTHER SETTINGS
 }
 
+
+# REST_FRAMEWORK = {
+#     'TEST_REQUEST_DEFAULT_FORMAT': 'json',
+# }
 # CELERY_TASK_ALWAYS_EAGER  = True

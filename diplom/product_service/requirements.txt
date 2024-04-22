@@ -15,3 +15,7 @@ django-redis==5.4.0
 django-rest-passwordreset==1.4.0
 
 drf-spectacular
+pytest_django
+model-bakery
+coverage
+factory_boy

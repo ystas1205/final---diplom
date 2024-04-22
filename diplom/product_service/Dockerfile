@@ -18,7 +18,8 @@ CMD python manage.py migrate \
      # Подтягиваем статичесике файлы
      && python manage.py collectstatic --no-input \
      # Запускаем gunicorn
-     && gunicorn product_service.wsgi:application --bind 0.0.0.0:8000
+     && gunicorn product_service.wsgi:application --bind 0.0.0.0:8000 \
+
 
 
 
