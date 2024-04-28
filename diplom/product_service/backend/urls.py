@@ -3,11 +3,7 @@ from django_rest_passwordreset.views import reset_password_request_token, \
     reset_password_confirm
 from backend.views import ContactView, ShopView, RegisterAccount, \
     ConfirmAccount, LoginAccount, ProductInfoView, BasketView, PartnerUpdate, \
-    AccountDetails, OrderView, CategoryView, PartnerState,Partnerexport
-
-
-
-# from backend.tasks import task_product_export
+    AccountDetails, OrderView, CategoryView, PartnerState, Partnerexport
 
 app_name = 'backend'
 
@@ -32,4 +28,6 @@ urlpatterns = [
     path('order', OrderView.as_view(), name='order'),
     path('categories', CategoryView.as_view(), name='categories'),
     path('order', OrderView.as_view(), name='order'),
+
+
 ]

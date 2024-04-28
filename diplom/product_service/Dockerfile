@@ -12,7 +12,8 @@ RUN pip install -r requirements.txt
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 # выполняем миграции
-CMD python manage.py migrate \
+
+CMD  python manage.py migrate \
      # Обновляем
      && pip install --upgrade pip \
      # Подтягиваем статичесике файлы

@@ -1,8 +1,10 @@
+from django.contrib.auth import get_user_model
 from django.contrib.auth.base_user import BaseUserManager, AbstractBaseUser
 from django.contrib.auth.models import AbstractUser, UserManager, \
     PermissionsMixin
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
+from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
 from django_rest_passwordreset.tokens import get_token_generator
 from django.contrib.auth.models import User
@@ -31,18 +33,27 @@ class UserManager(BaseUserManager):
     use_in_migrations = True
 
     def _create_user(self, email, password, **extra_fields):
+
         """
         Create and save a user with the given username, email, and password.
-        """
+         """
+        if self.auto_created is False and not email:
+            email = self.normalize_email(email)
+            user = self.model(email=email, **extra_fields)
+            user.set_password(password)
+            user.save(using=self._db)
+            return user
         if not email:
             raise ValueError('The given email must be set')
-        email = self.normalize_email(email)
-        user = self.model(email=email, **extra_fields)
-        user.set_password(password)
-        user.save(using=self._db)
-        return user
+        # email = self.normalize_email(email)
+        # user = self.model(email=email, **extra_fields)
+        # user.set_password(password)
+        # user.save(using=self._db)
+        # return user
 
     def create_user(self, email, password=None, **extra_fields):
+        if self.auto_created is False:
+            extra_fields.setdefault('is_active', True)
         extra_fields.setdefault('is_staff', False)
         extra_fields.setdefault('is_superuser', False)
         return self._create_user(email, password, **extra_fields)
@@ -94,6 +105,13 @@ class User(AbstractUser):
     type = models.CharField(verbose_name='Тип пользователя',
                             choices=USER_TYPE_CHOICES, max_length=5,
                             default='buyer')
+
+    def dispatch(self, request, *args, **kwargs):
+        a = self
+        self.is_active = get_object_or_404(get_user_model(),
+                                           username=kwargs['user'],
+                                           is_active=True)
+        return super().dispatch(request, *args, **kwargs)
 
     def __str__(self):
         return f'{self.first_name} {self.last_name}'
@@ -169,8 +187,6 @@ class ProductInfo(models.Model):
     price_rrc = models.PositiveIntegerField(
         verbose_name='Рекомендуемая розничная цена')
 
-
-
     class Meta:
         verbose_name = 'Информация о продукте'
         verbose_name_plural = "Информационный список о продуктах"
@@ -180,7 +196,6 @@ class ProductInfo(models.Model):
         ]
     # def __str__(self):
     #     return self.model
-
 
 
 class Parameter(models.Model):
@@ -326,5 +341,3 @@ class ConfirmEmailToken(models.Model):
 
     def __str__(self):
         return "Password reset token for user {user}".format(user=self.user)
-
-

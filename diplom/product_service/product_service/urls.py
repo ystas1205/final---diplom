@@ -16,20 +16,24 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.urls import path, include
-from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
+from django.urls import path, include, re_path
+from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, \
+    SpectacularSwaggerView
 
-app_name = 'backend'
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/',
-         include('backend.urls')),
+         include('backend.urls', namespace='backend')),
+    path('auth/',
+         include('rest_framework_social_oauth2.urls', namespace='social')),
     path("__debug__/", include("debug_toolbar.urls")),
 
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     # Optional UI:
-    path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
-    path('api/schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
+    path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'),
+         name='swagger-ui'),
+    path('api/schema/redoc/', SpectacularRedocView.as_view(url_name='schema'),
+         name='redoc'),
 
 ]
 

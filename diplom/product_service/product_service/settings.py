@@ -49,6 +49,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'oauth2_provider',
+    'social_django',
+    'rest_framework_social_oauth2',
     'rest_framework.authtoken',
     'drf_spectacular',
     'django_rest_passwordreset',
@@ -143,7 +146,6 @@ AUTH_USER_MODEL = 'backend.User'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
-
 # EMAIL_HOST = os.getenv('EMAIL_HOST'),
 # EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER'),
 # EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD'),
@@ -156,7 +158,6 @@ EMAIL_HOST_PASSWORD = '7zPkj6PxU7NUjngp6fhV'
 EMAIL_PORT = '465'
 EMAIL_USE_SSL = True
 SERVER_EMAIL = EMAIL_HOST_USER
-
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
@@ -176,21 +177,44 @@ REST_FRAMEWORK = {
     ),
     'TEST_REQUEST_DEFAULT_FORMAT': 'json',
 
-
     'DEFAULT_AUTHENTICATION_CLASSES': (
 
         'rest_framework.authentication.TokenAuthentication',
+        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
+        'rest_framework_social_oauth2.authentication.SocialAuthentication',
     ),
 
- }
+}
+SOCIAL_AUTH_VK_OAUTH2_KEY = '51664963'
+SOCIAL_AUTH_VK_OAUTH2_SECRET = '6gTT3qZUnOVhmrmdbLvf'
+SOCIAL_AUTH_VK_OAUTH2_SCOPE = ['email']
+SOCIAL_AUTH_VK_OAUTH2_EXTRA_PARAMS = {'fields': 'email', }
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.vk.VKOAuth2',
+    'rest_framework_social_oauth2.backends.DjangoOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
 
-# CELERY_BROKER_URL ='redis://127.0.0.1:6379/0'
+)
+DRFSO2_URL_NAMESPACE = 'social'
+
+# SOCIAL_AUTH_VK_OAUTH2_SCOPE = ['email']
+# SOCIAL_AUTH_VK_OAUTH2_EXTRA_PARAMS = {'fields': 'email', }
+
+# SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
+# SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {
+#     'fields': 'id, name, email'
+# }
+
+
+
+
+CELERY_BROKER_URL = 'redis://127.0.0.1:6379/0'
+
+CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379/1'
+
+# CELERY_BROKER_URL: os.getenv('CELERY_BROKER_URL')
 #
-# CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379/1'
-
-CELERY_BROKER_URL: os.getenv('CELERY_BROKER_URL')
-
-CELERY_RESULT_BACKEND: os.getenv('CELERY_RESULT_BACKEND')
+# CELERY_RESULT_BACKEND: os.getenv('CELERY_RESULT_BACKEND')
 
 CELERY_CACHE_BACKEND = 'django-cache'
 
@@ -208,8 +232,4 @@ SPECTACULAR_SETTINGS = {
     # OTHER SETTINGS
 }
 
-
-# REST_FRAMEWORK = {
-#     'TEST_REQUEST_DEFAULT_FORMAT': 'json',
-# }
 # CELERY_TASK_ALWAYS_EAGER  = True
