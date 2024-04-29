@@ -53,7 +53,7 @@ class ShopAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     list_display = ['id', 'name', 'url', 'state', 'user']
     list_display_links = ['id', 'name']
     search_fields = ['name__startswith']
-    list_per_page = 5
+    list_per_page = 15
 
 
 @admin.register(Category)
@@ -61,7 +61,7 @@ class CategoryAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     list_display = ['id', 'name']
     list_display_links = ['id', 'name']
     search_fields = ['name__startswith']
-    list_per_page = 5
+    list_per_page = 15
 
 
 @admin.register(Product)
@@ -69,7 +69,7 @@ class ProductAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     list_display = ['id', 'name', 'category']
     list_display_links = ['id', 'name']
     search_fields = ['name', 'category__name']
-    list_per_page = 5
+    list_per_page = 15
 
 
 @admin.register(ProductInfo)
@@ -79,7 +79,7 @@ class ProductInfoAdmin(ImportExportModelAdmin, admin.ModelAdmin):
 
     list_display_links = ['id', 'model']
     search_fields = ['model', 'shop__name']
-    list_per_page = 5
+    list_per_page = 15
 
 
 @admin.register(Parameter)
@@ -87,15 +87,14 @@ class ParameterAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     list_display = ['id', 'name']
     list_display_links = ['id', 'name']
     search_fields = ['name']
-    list_per_page = 5
+    list_per_page = 15
 
 
 @admin.register(ProductParameter)
 class ProductParameterAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     list_display = ['id', 'value', 'parameter', 'product_info_id']
     list_display_links = ['id', 'value', 'parameter']
-    # search_fields = ['product_info_id'] # id перевести в строку нужно
-    list_per_page = 5
+    list_per_page = 15
 
 
 @admin.register(Order)
@@ -106,7 +105,7 @@ class OrderAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     search_fields = ['user__last_name', 'user__first_name']
     list_editable = ['state']
     actions = ['set_pub']
-    list_per_page = 5
+    list_per_page = 15
 
     @admin.action(description='Статус')
     def set_pub(request, queryset):
@@ -117,7 +116,7 @@ class OrderAdmin(ImportExportModelAdmin, admin.ModelAdmin):
 class OrderItemAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     list_display = ['id', 'quantity', 'order', 'product_info_id']
     list_display_links = ['id', 'quantity']
-    list_per_page = 5
+    list_per_page = 15
 
 
 @admin.register(Contact)
@@ -126,7 +125,7 @@ class ContactAdmin(ImportExportModelAdmin, admin.ModelAdmin):
                     'building', 'apartment', 'phone']
     list_display_links = ['id', 'user']
     search_fields = ['user__last_name', 'user__first_name']
-    list_per_page = 5
+    list_per_page = 15
 
 
 @admin.register(ConfirmEmailToken)
@@ -134,4 +133,3 @@ class ConfirmEmailTokenAdmin(admin.ModelAdmin):
     list_display = ('id', 'user', 'key', 'created_at',)
     list_display_links = ['id', 'user']
     search_fields = ['user__last_name', 'user__first_name']
-

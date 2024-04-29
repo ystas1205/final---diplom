@@ -42,6 +42,7 @@ INTERNAL_IPS = [
 # Application definition
 
 INSTALLED_APPS = [
+    'baton',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -58,7 +59,8 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'backend',
     'django_celery_results',
-    'import_export'
+    'import_export',
+    'baton.autodiscover',
 
 ]
 
@@ -206,8 +208,6 @@ DRFSO2_URL_NAMESPACE = 'social'
 # }
 
 
-
-
 CELERY_BROKER_URL = 'redis://127.0.0.1:6379/0'
 
 CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379/1'
@@ -233,3 +233,14 @@ SPECTACULAR_SETTINGS = {
 }
 
 # CELERY_TASK_ALWAYS_EAGER  = True
+BATON = {
+    # 'CHANGELIST_FILTERS_IN_MODAL': True,
+    'CHANGELIST_FILTERS_ALWAYS_OPEN': True,
+    'CHANGELIST_FILTERS_FORM': True,
+    'COLLAPSABLE_USER_AREA': True,
+    'MENU_ALWAYS_COLLAPSED': False,
+    # 'MENU_TITLE': 'Menu',
+    # 'MESSAGES_TOASTS': True,
+    'GRAVATAR_DEFAULT_IMG': 'Blank',
+    'GRAVATAR_ENABLED': True,
+}
