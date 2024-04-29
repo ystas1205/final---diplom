@@ -19,6 +19,16 @@ from baton.autodiscover import admin
 from django.urls import path, include, re_path
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, \
     SpectacularSwaggerView
+from django.urls import path
+
+def trigger_error(request):
+    division_by_zero = 1 / 0
+
+# urlpatterns = [
+#     path('sentry-debug/', trigger_error),
+#     # ...
+# ]
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -35,6 +45,8 @@ urlpatterns = [
          name='swagger-ui'),
     path('api/schema/redoc/', SpectacularRedocView.as_view(url_name='schema'),
          name='redoc'),
+
+    path('sentry-debug/', trigger_error),
 
 ]
 

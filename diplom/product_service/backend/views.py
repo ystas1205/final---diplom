@@ -686,10 +686,10 @@ class PartnerUpdate(APIView):
         if not request.user.is_authenticated:
             return JsonResponse({'Status': False, 'Error': 'Log in required'},
                                 status=403)
-        #
-        # if request.user.type != 'shop':
-        #     return JsonResponse(
-        #         {'Status': False, 'Error': 'Только для магазинов'}, status=403)
+
+        if request.user.type != 'shop':
+            return JsonResponse(
+                {'Status': False, 'Error': 'Только для магазинов'}, status=403)
         UserModel = get_user_model()
         user = UserModel.objects.get(pk=request.user.id)
         user_id = user.pk
@@ -783,6 +783,7 @@ class Partnerexport(APIView):
     """
     Экспорт товаров в файл
     """
+
     @extend_schema(summary="Экспорт товаров в файл")
     def post(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
@@ -796,3 +797,44 @@ class Partnerexport(APIView):
         return Response({'status': 'Экспорт данных прошел успешно'},
 
                         status=status.HTTP_201_CREATED)
+
+
+class Sentrytest(APIView):
+    """Test Sentry вызывает ошибку 'Пользователь» не является итерируемым'"""
+
+    @extend_schema(
+        summary="Test Sentry",
+        request=ContactSerializer,
+        examples=[
+            OpenApiExample(
+                "Post example",
+                description="Test example for the post",
+                value=
+                {
+                    "city": "Gorod",
+                    "street": "Shashkin street 40",
+                    "house": "Apartament 28",
+                    "structure": 123,
+                    "building": 123,
+                    "apartment": 123,
+                    "phone": 89222334847,
+
+                },
+                # status_codes=[str(status.HTTP_200_OK)],
+            ),
+        ],
+    )
+    def post(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return Response({'message': 'Требуется войти'},
+                            status=status.HTTP_403_FORBIDDEN)
+        if {'city', 'street', 'phone'}.issubset(request.user):
+            # request.data._mutable = True
+            request.data.update({'user': request.user.id})
+            serializer = ContactSerializer(data=request.data)
+            if serializer.is_valid(raise_exception=True):
+                serializer.save()
+                return Response({'status': 'Контакты добавлены'},
+                                status=status.HTTP_201_CREATED)
+        return Response({'Status': 'Не указаны все необходимые аргументы'},
+                        status=status.HTTP_400_BAD_REQUEST)
