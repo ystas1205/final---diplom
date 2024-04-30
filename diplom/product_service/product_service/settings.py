@@ -201,12 +201,22 @@ REST_FRAMEWORK = {
         'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
         'rest_framework_social_oauth2.authentication.SocialAuthentication',
     ),
+    # Throttling
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.UserRateThrottle',
+        'rest_framework.throttling.AnonRateThrottle',
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'user': '20/minute',
+        'anon': '10/minute',
+    }
 
 }
+
 SOCIAL_AUTH_VK_OAUTH2_KEY = '51664963'
 SOCIAL_AUTH_VK_OAUTH2_SECRET = '6gTT3qZUnOVhmrmdbLvf'
-SOCIAL_AUTH_VK_OAUTH2_SCOPE = ['email']
-SOCIAL_AUTH_VK_OAUTH2_EXTRA_PARAMS = {'fields': 'email', }
+# SOCIAL_AUTH_VK_OAUTH2_SCOPE = ['email']
+# SOCIAL_AUTH_VK_OAUTH2_EXTRA_PARAMS = {'fields': 'email', }
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.vk.VKOAuth2',
     'rest_framework_social_oauth2.backends.DjangoOAuth2',
@@ -215,13 +225,6 @@ AUTHENTICATION_BACKENDS = (
 )
 DRFSO2_URL_NAMESPACE = 'social'
 
-# SOCIAL_AUTH_VK_OAUTH2_SCOPE = ['email']
-# SOCIAL_AUTH_VK_OAUTH2_EXTRA_PARAMS = {'fields': 'email', }
-
-# SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
-# SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {
-#     'fields': 'id, name, email'
-# }
 
 
 CELERY_BROKER_URL = 'redis://127.0.0.1:6379/0'
