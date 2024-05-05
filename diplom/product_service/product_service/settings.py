@@ -77,6 +77,7 @@ INSTALLED_APPS = [
     'django_celery_results',
     'import_export',
     'baton.autodiscover',
+    'imagekit',
 
 ]
 
@@ -160,6 +161,9 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 AUTH_USER_MODEL = 'backend.User'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -235,14 +239,14 @@ CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379/1'
 #
 # CELERY_RESULT_BACKEND: os.getenv('CELERY_RESULT_BACKEND')
 
-CELERY_CACHE_BACKEND = 'django-cache'
-
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
-        'LOCATION': 'redis://localhost:6379/1',
-    }
-}
+# CELERY_CACHE_BACKEND = 'django-cache'
+#
+# CACHES = {
+#     'default': {
+#         'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+#         'LOCATION': 'redis://localhost:6379/1',
+#     }
+# }
 SPECTACULAR_SETTINGS = {
     'TITLE': 'Сервис заказа розничных сетей API',
     'DESCRIPTION': 'Your project description',
@@ -251,7 +255,8 @@ SPECTACULAR_SETTINGS = {
     # OTHER SETTINGS
 }
 
-# CELERY_TASK_ALWAYS_EAGER  = True
+
+
 BATON = {
     # 'CHANGELIST_FILTERS_IN_MODAL': True,
     'CHANGELIST_FILTERS_ALWAYS_OPEN': True,
@@ -263,3 +268,5 @@ BATON = {
     'GRAVATAR_DEFAULT_IMG': 'Blank',
     'GRAVATAR_ENABLED': True,
 }
+
+# CELERY_TASK_ALWAYS_EAGER = True

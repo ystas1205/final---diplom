@@ -20,9 +20,13 @@ from django.urls import path, include, re_path
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, \
     SpectacularSwaggerView
 from django.urls import path
+from django.conf import settings
+from django.conf.urls.static import static
 
-def trigger_error(request):
-    division_by_zero = 1 / 0
+
+# def trigger_error(request):
+#     division_by_zero = 1 / 0
+
 
 # urlpatterns = [
 #     path('sentry-debug/', trigger_error),
@@ -31,24 +35,28 @@ def trigger_error(request):
 
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('baton/', include('baton.urls')),
-    path('api/v1/',
-         include('backend.urls', namespace='backend')),
-    path('auth/',
-         include('rest_framework_social_oauth2.urls', namespace='social')),
-    path("__debug__/", include("debug_toolbar.urls")),
+                  path('admin/', admin.site.urls),
+                  path('baton/', include('baton.urls')),
+                  path('api/v1/',
+                       include('backend.urls', namespace='backend')),
+                  path('auth/',
+                       include('rest_framework_social_oauth2.urls',
+                               namespace='social')),
+                  path("__debug__/", include("debug_toolbar.urls")),
 
-    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
-    # Optional UI:
-    path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'),
-         name='swagger-ui'),
-    path('api/schema/redoc/', SpectacularRedocView.as_view(url_name='schema'),
-         name='redoc'),
+                  path('api/schema/', SpectacularAPIView.as_view(),
+                       name='schema'),
+                  # Optional UI:
+                  path('api/docs/',
+                       SpectacularSwaggerView.as_view(url_name='schema'),
+                       name='swagger-ui'),
+                  path('api/schema/redoc/',
+                       SpectacularRedocView.as_view(url_name='schema'),
+                       name='redoc'),
 
-    path('sentry-debug/', trigger_error),
+                  # path('sentry-debug/', trigger_error),
 
-]
+              ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 admin.site.site_header = "Панель администрирования"
 admin.site.index_title = "Сервис заказа товаров для розничных сетей"

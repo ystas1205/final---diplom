@@ -8,6 +8,10 @@ from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
 from django_rest_passwordreset.tokens import get_token_generator
 from django.contrib.auth.models import User
+from imagekit.models import ImageSpecField
+from imagekit.processors import ResizeToFill
+from pilkit.processors import ResizeToFill
+from imagekit.models import ProcessedImageField
 
 STATE_CHOICES = (
     ('basket', 'Статус корзины'),
@@ -37,7 +41,7 @@ class UserManager(BaseUserManager):
         """
         Create and save a user with the given username, email, and password.
          """
-        if self.auto_created is False and not email:
+        if self.auto_created is False:
             email = self.normalize_email(email)
             user = self.model(email=email, **extra_fields)
             user.set_password(password)
@@ -106,12 +110,11 @@ class User(AbstractUser):
                             choices=USER_TYPE_CHOICES, max_length=5,
                             default='buyer')
 
-    def dispatch(self, request, *args, **kwargs):
-        a = self
-        self.is_active = get_object_or_404(get_user_model(),
-                                           username=kwargs['user'],
-                                           is_active=True)
-        return super().dispatch(request, *args, **kwargs)
+    avatar_thumbnail = ProcessedImageField(upload_to='avatars/%Y/%m/%d/',
+                                           processors=[ResizeToFill(100, 50)],
+                                           format='JPEG',
+                                           options={'quality': 60}, blank=True,
+                                           null=True, verbose_name="Фото")
 
     def __str__(self):
         return f'{self.first_name} {self.last_name}'
@@ -136,6 +139,9 @@ class Shop(models.Model):
         verbose_name = 'Магазин'
         verbose_name_plural = "Список магазинов"
         ordering = ('-name',)
+
+    def __str__(self):
+        return self.name
 
     def __str__(self):
         return self.name

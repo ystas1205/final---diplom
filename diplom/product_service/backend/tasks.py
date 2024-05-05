@@ -9,6 +9,8 @@ from product_service.celery import app
 from backend.models import ConfirmEmailToken, User, Shop, Category, \
     ProductParameter, Parameter, ProductInfo, Product
 
+from backend.serializers import UserSerializer
+
 
 @app.task
 def task_new_user(user_id):
@@ -33,6 +35,14 @@ def task_new_user(user_id):
     except ConfirmEmailToken.DoesNotExist:
         logging.warning(
             "Tried to send verification email to non-existing user '%s'" % user_id)
+    return 'Done'
+
+
+@shared_task(bind=True)
+def file_update(self, user_id, instance):
+    """ Обновление фото пользователя"""
+    file = User.objects.filter(id=user_id).update(
+        avatar_thumbnail=instance)
     return 'Done'
 
 

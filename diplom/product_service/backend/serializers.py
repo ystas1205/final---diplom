@@ -1,21 +1,22 @@
 from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework import serializers, status
 
-from backend.models import User, Category, Shop, ProductInfo, Product, ProductParameter, OrderItem, Order, Contact
+from backend.models import User, Category, Shop, ProductInfo, Product, \
+    ProductParameter, OrderItem, Order, Contact
 
 
 class ContactSerializer(serializers.ModelSerializer):
     class Meta:
         model = Contact
-        fields = ('id', 'city', 'street', 'house', 'structure', 'building', 'apartment', 'user', 'phone')
+        fields = (
+            'id', 'city', 'street', 'house', 'structure', 'building',
+            'apartment',
+            'user', 'phone')
         read_only_fields = ('id',)
-        extra_kwargs= {
+        extra_kwargs = {
             'user': {'write_only': True},
 
         }
-
-
-
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -23,9 +24,14 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'first_name', 'last_name', 'email', 'company', 'position', 'contacts')
+        fields = (
+            'id', 'first_name', 'last_name', 'email', 'company', 'position', 'avatar_thumbnail',
+            'contacts')
         read_only_fields = ('id',)
-
+        # extra_kwargs = {
+        #     'avatar_thumbnail': {'required': False,},
+        #
+        # }
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -60,12 +66,14 @@ class ProductParameterSerializer(serializers.ModelSerializer):
 
 class ProductInfoSerializer(serializers.ModelSerializer):
     product = ProductSerializer(read_only=True)
-    product_parameters = ProductParameterSerializer(read_only=True,many=True)
-    shop= serializers.StringRelatedField()
+    product_parameters = ProductParameterSerializer(read_only=True, many=True)
+    shop = serializers.StringRelatedField()
 
     class Meta:
         model = ProductInfo
-        fields = ('id', 'model', 'product', 'shop', 'quantity', 'price', 'price_rrc', 'product_parameters',)
+        fields = (
+            'id', 'model', 'product', 'shop', 'quantity', 'price', 'price_rrc',
+            'product_parameters',)
         read_only_fields = ('id',)
 
 
@@ -91,7 +99,8 @@ class OrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ('id', 'ordered_items', 'state', 'dt', 'total_sum', 'contact',)
+        fields = (
+            'id', 'ordered_items', 'state', 'dt', 'total_sum', 'contact',)
         read_only_fields = ('id',)
 
 

@@ -2,7 +2,8 @@ from typing import Type
 from django.db.models.signals import post_save
 from django.dispatch import receiver, Signal
 from django_rest_passwordreset.signals import reset_password_token_created
-from backend.tasks import task_new_user, task_new_order, task_password_reset
+from backend.tasks import task_new_user, task_new_order, task_password_reset, \
+    file_update
 from backend.models import ConfirmEmailToken, User
 
 new_user_registered = Signal()
@@ -28,6 +29,8 @@ def new_user_registered_signal(sender: Type[User], instance: User,
 
     if created and not instance.is_active:
         task_new_user.delay(instance.pk)
+    else:
+        file_update.delay(instance.pk,instance.avatar_thumbnail.name)
 
 
 @receiver(new_order)

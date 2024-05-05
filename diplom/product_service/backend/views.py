@@ -1,3 +1,5 @@
+from lib2to3.pgen2.parse import ParseError
+
 from django.contrib.auth import get_user_model
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema, OpenApiParameter, \
@@ -81,7 +83,6 @@ class RegisterAccount(APIView):
                     user = user_serializer.save()
                     user.set_password(request.data['password'])
                     user.save()
-
                     return Response({'status': 'Регистрация прошла успешно'},
                                     status=status.HTTP_201_CREATED)
                 else:
@@ -838,3 +839,19 @@ class Sentrytest(APIView):
                                 status=status.HTTP_201_CREATED)
         return Response({'Status': 'Не указаны все необходимые аргументы'},
                         status=status.HTTP_400_BAD_REQUEST)
+
+
+class Updatefile(APIView):
+
+    def post(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return Response({'message': 'Требуется войти'},
+                            status=status.HTTP_403_FORBIDDEN)
+        try:
+            file = request.data['file']
+        except KeyError:
+            raise ParseError('Request has no resource file attached')
+
+        f = User.objects.create_user(avatar_thumbnail=file,id=request.user.id)
+        return Response({'status': 'Изображение загружено'},
+                        status=status.HTTP_201_CREATED)

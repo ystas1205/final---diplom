@@ -4,7 +4,7 @@ from django_rest_passwordreset.views import reset_password_request_token, \
 from backend.views import ContactView, ShopView, RegisterAccount, \
     ConfirmAccount, LoginAccount, ProductInfoView, BasketView, PartnerUpdate, \
     AccountDetails, OrderView, CategoryView, PartnerState, Partnerexport, \
-    Sentrytest
+    Sentrytest, Updatefile
 
 app_name = 'backend'
 
@@ -29,6 +29,7 @@ urlpatterns = [
     path('order', OrderView.as_view(), name='order'),
     path('categories', CategoryView.as_view(), name='categories'),
     path('order', OrderView.as_view(), name='order'),
-    path('sentrytest', Sentrytest.as_view(), name='sentrytest')
+    path('sentry', Sentrytest.as_view(), name='sentry-test'),
+    path('upload', Updatefile.as_view(), name='update-file')
 
 ]

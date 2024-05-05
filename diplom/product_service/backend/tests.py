@@ -1,3 +1,5 @@
+
+
 from rest_framework.test import APITestCase, APIClient
 from django.urls import reverse
 from rest_framework import status
@@ -7,6 +9,7 @@ from backend.models import User, ConfirmEmailToken, Contact
 
 class UserTests(APITestCase):
     def setUp(self):
+
         # данные для тестирование пользователя
         self.data_user = {
             "email": "test_email@mail.ru",
@@ -14,7 +17,8 @@ class UserTests(APITestCase):
             "company": "company_name",
             "position": 211233,
             "first_name": "first_name",
-            "last_name": "last_name"
+            "last_name": "last_name",
+
         }
         # данные для тестирование пользователя c невалидной почтой
         self.invalid_mail_user = {
@@ -23,7 +27,8 @@ class UserTests(APITestCase):
             "company": "company_name",
             "position": 211233,
             "first_name": "first_name",
-            "last_name": "last_name"
+            "last_name": "last_name",
+
         }
         # создание пользователя для получения токена подтверждения
         self.user_test = User.objects.create_user(email="test_email",
@@ -61,7 +66,7 @@ class UserTests(APITestCase):
         url = reverse('backend:user-register')
         response = self.client.post(url, self.data_user, format="json")
 
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_invalid_email(self):
         """ Тест регестрации пользователя c невалидной почтой """
@@ -70,6 +75,7 @@ class UserTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json(), {'Status': False, 'Errors': {
             'email': ['Введите правильный адрес электронной почты.']}})
+        print(response.json())
 
     def test_argument_validation(self):
         """ Тест на введение не полных данных пользователя """

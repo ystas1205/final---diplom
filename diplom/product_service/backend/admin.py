@@ -4,6 +4,7 @@ from django.contrib.auth.admin import UserAdmin
 from backend.models import User, Shop, Category, Product, ProductInfo, \
     Parameter, ProductParameter, Order, OrderItem, \
     Contact, ConfirmEmailToken
+from django.utils.safestring import mark_safe
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin
 
@@ -16,19 +17,25 @@ class CustomUserAdmin(UserAdmin):
     model = User
 
     fieldsets = (
-        (None, {'fields': ('email', 'password', 'type')}),
+        (None, {'fields': ('email', 'password', 'type',)}),
         ('Personal info',
-         {'fields': ('first_name', 'last_name', 'company', 'position')}),
+         {'fields': (
+             'first_name', 'last_name', 'company', 'position',
+             'avatar_thumbnail',
+
+         )}),
         ('Permissions', {
             'fields': ('is_active', 'is_staff', 'is_superuser', 'groups',
                        'user_permissions'),
         }),
         ('Important dates', {'fields': ('last_login', 'date_joined')}),
     )
+
     list_display = (
-        'id', 'first_name', 'last_name', 'email', 'is_staff', 'type',
+        'id', 'first_name', 'last_name', 'email', 'is_staff',
+        'type',
         'company',
-        'position', 'is_active')
+        'position', 'is_active', 'post_photo')
 
     list_display_links = ['id', 'first_name', 'last_name',
                           'email']  # кликабельность полей
@@ -46,6 +53,15 @@ class CustomUserAdmin(UserAdmin):
     @admin.action(description='Статус персонала')
     def set_pub(request, queryset):
         queryset.update(set_pub=User.Status.PUBLISHED)
+
+    # admin_thumbnail = AdminThumbnail(image_field='thumbnail')
+
+    @admin.display(description='Фото')
+    def post_photo(self, user: User):
+        if user.avatar_thumbnail:
+            return mark_safe(
+                f"<img src='{user.avatar_thumbnail.url}'.width=50>")
+        return "Без фото"
 
 
 @admin.register(Shop)
