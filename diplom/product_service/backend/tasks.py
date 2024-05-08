@@ -8,11 +8,10 @@ from django_rest_passwordreset.models import ResetPasswordToken
 from product_service.celery import app
 from backend.models import ConfirmEmailToken, User, Shop, Category, \
     ProductParameter, Parameter, ProductInfo, Product
-
 from backend.serializers import UserSerializer
 
 
-@app.task
+@shared_task
 def task_new_user(user_id):
     """
     Отправляем письмо с подтрердждением почты
@@ -180,4 +179,12 @@ def task_product_import(self, item, data, user_id, *args, **kwargs):
                 product_info_id=product_info.id,
                 parameter_id=parameter_object.id,
                 value=value)
+    return 'Done'
+
+
+@shared_task(bind=True)
+def task_update_photo(self, user_id, instance):
+    """ Обновление фото продукта"""
+    file = Product.objects.filter(id=user_id).update(
+        product_photo=instance)
     return 'Done'

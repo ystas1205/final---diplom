@@ -111,7 +111,7 @@ class User(AbstractUser):
                             default='buyer')
 
     avatar_thumbnail = ProcessedImageField(upload_to='avatars/%Y/%m/%d/',
-                                           processors=[ResizeToFill(100, 50)],
+                                           processors=[ResizeToFill(50, 50)],
                                            format='JPEG',
                                            options={'quality': 60}, blank=True,
                                            null=True, verbose_name="Фото")
@@ -165,6 +165,11 @@ class Category(models.Model):
 class Product(models.Model):
     objects = models.manager.Manager()
     name = models.CharField(max_length=80, verbose_name='Название')
+    product_photo = ProcessedImageField(upload_to='avatars/%Y/%m/%d/',
+                                        processors=[ResizeToFill(50, 50)],
+                                        format='JPEG',
+                                        options={'quality': 60}, blank=True,
+                                        null=True, verbose_name="Фото")
     category = models.ForeignKey(Category, verbose_name='Категория',
                                  related_name='products', blank=True,
                                  on_delete=models.CASCADE)

@@ -1,4 +1,4 @@
-from lib2to3.pgen2.parse import ParseError
+
 
 from django.contrib.auth import get_user_model
 from drf_spectacular.types import OpenApiTypes
@@ -13,6 +13,7 @@ from backend.models import Contact, Shop, ConfirmEmailToken, ProductInfo, \
     Category, Product, Parameter, ProductParameter, Order, User, OrderItem
 from distutils.util import strtobool
 
+from rest_framework.parsers import FileUploadParser
 from rest_framework.request import Request
 from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
@@ -34,6 +35,7 @@ from backend.tasks import task_product_export, task_product_import
 
 
 class RegisterAccount(APIView):
+
     """
     Класс для регистрации покупателей
     """
@@ -48,14 +50,13 @@ class RegisterAccount(APIView):
                 description="Test example for the post",
                 value=
                 {
-                    "password": "",
-                    "email": "ystas2019@mail.ru",
+                    "password": "998877asdf",
+                    "email": "mail@mail.ru",
                     "company": "adidadas",
                     "position": "3231113",
-                    "first_name": "Станислав",
-                    "last_name": "Юдин"
+                    "first_name": "first_name",
+                    "last_name": "last_name"
                 },
-                # status_codes=[str(status.HTTP_201_CREATED)],
             ),
         ],
     )
@@ -107,10 +108,9 @@ class ConfirmAccount(APIView):
                 description="Test example for the post",
                 value=
                 {
-                    "email": "ystas2019@mail.ru",
-                    "token": "00cdc7540e547f0dc7a03889815337bc27fa4dd",
+                    "email": "mail@mail.ru",
+                    "token": "2a2f93a6533cd996013e46ad7",
                 },
-                # status_codes=[str(status.HTTP_200_OK)],
             ),
         ],
     )
@@ -150,10 +150,9 @@ class LoginAccount(APIView):
                 description="Test example for the post",
                 value=
                 {
-                    "email": "ystas2019@mail.ru",
-                    "password": "8490866stas",
+                    "email": "mail@mail.ru",
+                    "password": "998877asdf",
                 },
-                # status_codes=[str(status.HTTP_200_OK)],
             ),
         ],
     )
@@ -208,7 +207,6 @@ class ContactView(APIView):
                     "phone": 89222334847,
 
                 },
-                # status_codes=[str(status.HTTP_200_OK)],
             ),
         ],
     )
@@ -244,9 +242,7 @@ class ContactView(APIView):
                  "building": 1,
                  "apartment": 123,
                  "phone": 89222334847,
-
                  },
-                # status_codes=[str(status.HTTP_200_OK)],
             ),
         ],
     )
@@ -277,7 +273,6 @@ class ContactView(APIView):
                 value=
                 {"items": 1,
                  },
-                # status_codes=[str(status.HTTP_200_OK)],
             ),
         ],
     )
@@ -382,7 +377,6 @@ class BasketView(APIView):
                     "items": [{"product_info": 1, "quantity": 13},
                               {"product_info": 2, "quantity": 12}],
                 },
-                # status_codes=[str(status.HTTP_200_OK)],
             ),
         ],
     )
@@ -464,7 +458,6 @@ class BasketView(APIView):
                     "items": [{"product_info": 9, "quantity": 13},
                               {"product_info": 10, "quantity": 12}],
                 },
-                # status_codes=[str(status.HTTP_200_OK)],
             ),
         ],
     )
@@ -541,7 +534,6 @@ class AccountDetails(APIView):
                     "first_name": "Станислав",
                     "last_name": "Юдин"
                 },
-                # status_codes=[str(status.HTTP_200_OK)],
             ),
         ],
     )
@@ -617,7 +609,6 @@ class OrderView(APIView):
                     "id": "1",
                     "contact": "1",
                 },
-                # status_codes=[str(status.HTTP_200_OK)],
             ),
         ],
     )
@@ -687,19 +678,16 @@ class PartnerUpdate(APIView):
         if not request.user.is_authenticated:
             return JsonResponse({'Status': False, 'Error': 'Log in required'},
                                 status=403)
-
         if request.user.type != 'shop':
             return JsonResponse(
                 {'Status': False, 'Error': 'Только для магазинов'}, status=403)
         UserModel = get_user_model()
         user = UserModel.objects.get(pk=request.user.id)
         user_id = user.pk
-
         url = request.data.get('url')
         if url:
             validate_url = URLValidator()
             try:
-
                 validate_url(url)
             except ValidationError as e:
                 return JsonResponse({'Status': False, 'Error': str(e)})
@@ -755,7 +743,6 @@ class PartnerState(APIView):
                 value={
                     "state": "on",
                 },
-                # status_codes=[str(status.HTTP_200_OK)],
             ),
         ],
     )
@@ -821,7 +808,6 @@ class Sentrytest(APIView):
                     "phone": 89222334847,
 
                 },
-                # status_codes=[str(status.HTTP_200_OK)],
             ),
         ],
     )
@@ -839,19 +825,3 @@ class Sentrytest(APIView):
                                 status=status.HTTP_201_CREATED)
         return Response({'Status': 'Не указаны все необходимые аргументы'},
                         status=status.HTTP_400_BAD_REQUEST)
-
-
-class Updatefile(APIView):
-
-    def post(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return Response({'message': 'Требуется войти'},
-                            status=status.HTTP_403_FORBIDDEN)
-        try:
-            file = request.data['file']
-        except KeyError:
-            raise ParseError('Request has no resource file attached')
-
-        f = User.objects.create_user(avatar_thumbnail=file,id=request.user.id)
-        return Response({'status': 'Изображение загружено'},
-                        status=status.HTTP_201_CREATED)

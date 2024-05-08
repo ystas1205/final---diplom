@@ -25,13 +25,10 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = (
-            'id', 'first_name', 'last_name', 'email', 'company', 'position', 'avatar_thumbnail',
-            'contacts')
+            'id', 'first_name', 'last_name', 'email', 'company', 'position',
+            'avatar_thumbnail', 'contacts')
         read_only_fields = ('id',)
-        # extra_kwargs = {
-        #     'avatar_thumbnail': {'required': False,},
-        #
-        # }
+
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -53,7 +50,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ('name', 'category',)
+        fields = ('name', 'category','product_photo')
 
 
 class ProductParameterSerializer(serializers.ModelSerializer):
@@ -104,10 +101,3 @@ class OrderSerializer(serializers.ModelSerializer):
         read_only_fields = ('id',)
 
 
-class DummyDetailSerializer(serializers.Serializer):
-    status = serializers.IntegerField()
-
-
-class DummyDetailAndStatusSerializer(serializers.Serializer):
-    status = serializers.IntegerField()
-    details = serializers.CharField()

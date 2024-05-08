@@ -82,10 +82,18 @@ class CategoryAdmin(ImportExportModelAdmin, admin.ModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(ImportExportModelAdmin, admin.ModelAdmin):
-    list_display = ['id', 'name', 'category']
+    fields = ['name', 'category', 'product_photo']
+    list_display = ['id', 'name', 'photo', 'category']
     list_display_links = ['id', 'name']
     search_fields = ['name', 'category__name']
     list_per_page = 15
+
+    @admin.display(description='Фото')
+    def photo(self, product: Product):
+        if product.product_photo:
+            return mark_safe(
+                f"<img src='{product.product_photo.url}'.width=50>")
+        return "Без фото"
 
 
 @admin.register(ProductInfo)

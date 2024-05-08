@@ -66,7 +66,7 @@ class UserTests(APITestCase):
         url = reverse('backend:user-register')
         response = self.client.post(url, self.data_user, format="json")
 
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_invalid_email(self):
         """ Тест регестрации пользователя c невалидной почтой """
@@ -75,7 +75,7 @@ class UserTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json(), {'Status': False, 'Errors': {
             'email': ['Введите правильный адрес электронной почты.']}})
-        print(response.json())
+
 
     def test_argument_validation(self):
         """ Тест на введение не полных данных пользователя """

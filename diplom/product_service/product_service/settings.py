@@ -219,25 +219,28 @@ REST_FRAMEWORK = {
 
 SOCIAL_AUTH_VK_OAUTH2_KEY = '51664963'
 SOCIAL_AUTH_VK_OAUTH2_SECRET = '6gTT3qZUnOVhmrmdbLvf'
-# SOCIAL_AUTH_VK_OAUTH2_SCOPE = ['email']
-# SOCIAL_AUTH_VK_OAUTH2_EXTRA_PARAMS = {'fields': 'email', }
+
+SOCIAL_AUTH_VK_OAUTH2_SCOPE = ['email']
+SOCIAL_AUTH_VK_OAUTH2_EXTRA_PARAMS = {'fields': 'email'}
+
+# LOGIN_REDIRECT_URL = '/'
+# SOCIAL_AUTH_RAISE_EXCEPTIONS = True
+# RAISE_EXCEPTIONS = True
+
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.vk.VKOAuth2',
     'rest_framework_social_oauth2.backends.DjangoOAuth2',
     'django.contrib.auth.backends.ModelBackend',
-
 )
 DRFSO2_URL_NAMESPACE = 'social'
 
-
-
-CELERY_BROKER_URL = 'redis://127.0.0.1:6379/0'
-
-CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379/1'
-
-# CELERY_BROKER_URL: os.getenv('CELERY_BROKER_URL')
+# CELERY_BROKER_URL = 'redis://127.0.0.1:6379/0'
 #
-# CELERY_RESULT_BACKEND: os.getenv('CELERY_RESULT_BACKEND')
+# CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379/1'
+
+CELERY_BROKER_URL: os.getenv('CELERY_BROKER_URL')
+
+CELERY_RESULT_BACKEND: os.getenv('CELERY_RESULT_BACKEND')
 
 # CELERY_CACHE_BACKEND = 'django-cache'
 #
@@ -255,8 +258,6 @@ SPECTACULAR_SETTINGS = {
     # OTHER SETTINGS
 }
 
-
-
 BATON = {
     # 'CHANGELIST_FILTERS_IN_MODAL': True,
     'CHANGELIST_FILTERS_ALWAYS_OPEN': True,
@@ -268,5 +269,6 @@ BATON = {
     'GRAVATAR_DEFAULT_IMG': 'Blank',
     'GRAVATAR_ENABLED': True,
 }
+
 
 # CELERY_TASK_ALWAYS_EAGER = True
